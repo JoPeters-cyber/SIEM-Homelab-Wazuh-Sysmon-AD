@@ -73,6 +73,16 @@ Full narrative and examples: [Medium Article →](https://medium.com/@cyberxaman
 
 ---
 
+## 🎓 Student Attendance Lab Extension
+
+The Active Directory and Wazuh telemetry can also support an educational attendance dashboard based on interactive student sign-ins and sign-outs.
+
+[Student Attendance Tracking Guide →](docs/attendance-tracking.md)
+
+The guide covers Windows auditing, Wazuh event collection, saved searches, dashboard panels, late and absent status calculation, validation, and privacy safeguards.
+
+---
+
 ## 🛡️ Safety & Ethics
 
 * All simulations were run in an **isolated lab environment**
