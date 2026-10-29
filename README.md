@@ -71,6 +71,26 @@ These events mapped to MITRE ATT&CK tactics:
 
 Full narrative and examples: [Medium Article →](https://medium.com/@cyberxaman/building-a-siem-homelab-with-wazuh-sysmon-and-active-directory-ff90ff37fbcb)
 
+### ⚔️ Attack simulation & detection loop
+
+The [`simulations/`](simulations/) directory is a hands-on **detection
+engineering lab**: safely simulate an ATT&CK technique, capture the telemetry,
+write a Wazuh rule, then tune it. Custom rules live in
+[`detections/rules/local_rules.xml`](detections/rules/local_rules.xml) and are
+mapped to MITRE ATT&CK.
+
+| Technique | ATT&CK | Wazuh rule |
+|-----------|--------|------------|
+| Create local admin account | T1136.001 / T1098 | 100100, 100101 |
+| Scheduled task persistence | T1053.005 | 100102 |
+| Masquerading binary in staging dir | T1036 / T1204 | 100103 |
+| LSASS access (cred dumping) | T1003.001 | 100104 |
+| Kerberoasting | T1558.003 | 100105 |
+| SSH brute force | T1110 | 5712 (built-in) |
+
+See [`simulations/README.md`](simulations/README.md) for the step-by-step
+playbook and a write-up template.
+
 ---
 
 ## 🛡️ Safety & Ethics

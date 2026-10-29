@@ -1,0 +1,79 @@
+<!--
+  Wazuh custom detection rules for the SIEM homelab attack simulations.
+  Install on the Wazuh Manager at:
+      /var/ossec/etc/rules/local_rules.xml
+  then restart the manager:
+      sudo systemctl restart wazuh-manager
+
+  Rule IDs 100100+ are in the user-defined range and map to the simulations in
+  ../../simulations/README.md. Each rule is annotated with its MITRE ATT&CK ID.
+  Field names assume the Wazuh Windows eventchannel + Sysmon decoders.
+-->
+<group name="homelab,attack_simulation,">
+
+  <!-- 1. T1136.001 - Create local account (Security EventID 4720) -->
+  <rule id="100100" level="8">
+    <if_sid>60106</if_sid>
+    <field name="win.system.eventID">^4720$</field>
+    <description>User account created: $(win.eventdata.targetUserName)</description>
+    <mitre>
+      <id>T1136.001</id>
+    </mitre>
+  </rule>
+
+  <!-- 1b. T1098 - Account added to a privileged group (Security EventID 4732) -->
+  <rule id="100101" level="10">
+    <if_sid>60106</if_sid>
+    <field name="win.system.eventID">^4732$</field>
+    <field name="win.eventdata.targetUserName">Administrators|Domain Admins|Enterprise Admins</field>
+    <description>Account added to privileged group: $(win.eventdata.targetUserName)</description>
+    <mitre>
+      <id>T1098</id>
+    </mitre>
+  </rule>
+
+  <!-- 2. T1053.005 - Scheduled task created via schtasks.exe (Sysmon EventID 1) -->
+  <rule id="100102" level="8">
+    <if_sid>61603</if_sid>
+    <field name="win.eventdata.image">\\\\schtasks\.exe$</field>
+    <field name="win.eventdata.commandLine">(?i)/create</field>
+    <description>Scheduled task created via schtasks.exe (possible persistence)</description>
+    <mitre>
+      <id>T1053.005</id>
+    </mitre>
+  </rule>
+
+  <!-- 3. T1036 - Process executing from a public/temp staging directory (Sysmon EventID 1) -->
+  <rule id="100103" level="9">
+    <if_sid>61603</if_sid>
+    <field name="win.eventdata.image">(?i)\\\\(Users\\\\Public|Windows\\\\Temp|AppData\\\\Local\\\\Temp)\\\\</field>
+    <description>Process executed from a suspicious staging directory: $(win.eventdata.image)</description>
+    <mitre>
+      <id>T1036</id>
+      <id>T1204</id>
+    </mitre>
+  </rule>
+
+  <!-- 4. T1003.001 - Suspicious access to LSASS memory (Sysmon EventID 10) -->
+  <rule id="100104" level="12">
+    <if_sid>61610</if_sid>
+    <field name="win.eventdata.targetImage">(?i)\\\\lsass\.exe$</field>
+    <field name="win.eventdata.grantedAccess">(?i)0x1010|0x1410|0x1438|0x143a|0x1fffff</field>
+    <description>Suspicious handle opened to LSASS (possible credential dumping)</description>
+    <mitre>
+      <id>T1003.001</id>
+    </mitre>
+  </rule>
+
+  <!-- 5. T1558.003 - Kerberoasting: RC4 service ticket request (Security EventID 4769) -->
+  <rule id="100105" level="10">
+    <if_sid>60106</if_sid>
+    <field name="win.system.eventID">^4769$</field>
+    <field name="win.eventdata.ticketEncryptionType">^0x17$</field>
+    <description>Kerberos RC4 service ticket requested (possible Kerberoasting): $(win.eventdata.serviceName)</description>
+    <mitre>
+      <id>T1558.003</id>
+    </mitre>
+  </rule>
+
+</group>
